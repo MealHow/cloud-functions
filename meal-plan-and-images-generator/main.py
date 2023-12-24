@@ -319,7 +319,9 @@ async def generate_images_for_meals(meal_plan: dict):
     async with asyncio.TaskGroup() as tg:
         for meal_name in unmatched_meals:
             meal_to_image_map[meal_name] = tg.create_task(
-                openai_get_generated_image_url(f"{meal_names_map[meal_name]} on the kitchen table")
+                openai_get_generated_image_url(
+                    f"Professional food picture of {meal_names_map[meal_name]} meal on the kitchen table"
+                )
             )
 
     dest_bucket = storage_client.bucket(DESTINATION_BUCKET)
