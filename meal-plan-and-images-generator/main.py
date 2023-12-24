@@ -1,7 +1,9 @@
 import asyncio
 import csv
 import os
+import re
 import ssl
+from io import BytesIO
 from typing import Any
 
 import certifi
@@ -49,6 +51,7 @@ Please make me a meal plan for a week's worth of meals. I must hit a {kcal}-calo
 
 DATASTORE_DB = os.environ["DATASTORE_DB"]
 OPENAI_GPT_MODEL_VERSION = os.environ["OPENAI_GPT_MODEL_VERSION"]
+DESTINATION_BUCKET = os.environ["DESTINATION_BUCKET"]
 
 
 class HttpClient:
@@ -57,7 +60,7 @@ class HttpClient:
     def start(self) -> None:
         ssl_context = ssl.create_default_context(cafile=certifi.where())
         conn = TCPConnector(ssl=ssl_context)
-        self.session = ClientSession(connector=conn)
+        self.session = ClientSession(connector=conn, auto_decompress=True)
 
     async def stop(self) -> None:
         if self.session is None:
@@ -287,8 +290,58 @@ async def compound_most_optimal_meal_plan(
     return optimal_meal_plan
 
 
+def _to_snake_case(s):
+    s = s.lower()
+    s = re.sub(r'\W+', '_', s)
+    s = s.strip('_')
+
+    return s
+
+
 async def generate_images_for_meals(meal_plan: dict):
-    pass
+    snake_cased_meal_names = set()
+    meal_names_map = {}
+    meal_to_image_map = {}
+
+    for day in meal_plan:
+        for meal in meal_plan[day]["meals"]:
+            meal_name = _to_snake_case(meal["meal_name"])
+            snake_cased_meal_names.add(meal_name)
+            meal_names_map[meal_name] = meal["meal_name"]
+
+    unmatched_meals = []
+    for meal_name in snake_cased_meal_names:
+        key = datastore_client.key("MealImage", meal_name)
+        meal_obj = datastore_client.get(key)
+        if meal_obj is None:
+            unmatched_meals.append(meal_name)
+
+    async with asyncio.TaskGroup() as tg:
+        for meal_name in unmatched_meals:
+            meal_to_image_map[meal_name] = tg.create_task(
+                openai_get_generated_image_url(f"{meal_names_map[meal_name]} on the kitchen table")
+            )
+
+    dest_bucket = storage_client.bucket(DESTINATION_BUCKET)
+
+    for meal_name in meal_to_image_map:
+        image_url = meal_to_image_map[meal_name].result()
+
+        async with http_client.session.get(image_url) as response:
+            raw_img = BytesIO(await response.content.read())
+            raw_img.seek(0)
+            dest_blob = dest_bucket.blob(f"{meal_name}.png")
+            dest_blob.upload_from_file(raw_img, content_type="image/png")
+
+        key = datastore_client.key("MealImage", meal_name)
+        meal_obj = datastore.Entity(key=key)
+        meal_obj.update({
+            "full_name": meal_names_map[meal_name],
+            "images": {
+                str(i): f"https://static.mealhow.ai/meal-images/{meal_name}_{i}x{i}.jpg" for i in (256, 512, 1024)
+            },
+        })
+        datastore_client.put(meal_obj)
 
 
 async def main(input_data):
@@ -299,6 +352,7 @@ async def main(input_data):
     diet_plan_request_body = MEAL_PLAN_REQUEST.format(kcal=calories_daily_goal)
     parsed_diet_plans = await request_meal_plans(diet_plan_request_body)
     optimal_meal_plan = await compound_most_optimal_meal_plan(parsed_diet_plans, calories_daily_goal)
+    await generate_images_for_meals(optimal_meal_plan)
 
     await http_client.stop()
     return optimal_meal_plan
