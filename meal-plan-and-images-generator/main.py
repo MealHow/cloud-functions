@@ -1,6 +1,7 @@
 import asyncio
 
 import functions_framework
+import meal_plan_generator
 import openai
 
 import clients
@@ -14,8 +15,14 @@ async def main(input_data):
 
     calories_daily_goal = int(input_data['kcal'])
     diet_plan_request_body = config.MEAL_PLAN_PROMPT.format(kcal=calories_daily_goal)
-    parsed_diet_plans = await core.request_meal_plans(diet_plan_request_body)
-    optimal_meal_plan = await core.compound_most_optimal_meal_plan(parsed_diet_plans, calories_daily_goal)
+    parsed_diet_plans = await meal_plan_generator.request_meal_plans(
+        request_body=diet_plan_request_body,
+        gpt_model=config.OPENAI_GPT_MODEL_VERSION,
+    )
+    optimal_meal_plan = await meal_plan_generator.compound_most_optimal_meal_plan(
+        diet_plan_variations=parsed_diet_plans,
+        daily_calories_goal=calories_daily_goal,
+    )
 
     await core.generate_images_for_meals(optimal_meal_plan)
     await clients.http_client.stop()
