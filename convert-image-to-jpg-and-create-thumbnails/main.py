@@ -41,4 +41,4 @@ def convert_image(cloud_event):
         img_byte_arr.seek(0)
 
         dest_blob = dest_bucket.blob(new_image_name)
-        dest_blob.upload_from_file(img_byte_arr)
+        dest_blob.upload_from_file(img_byte_arr, content_type="image/jpeg")
