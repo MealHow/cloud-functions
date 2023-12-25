@@ -16,9 +16,10 @@ async def main(input_data):
     diet_plan_request_body = config.MEAL_PLAN_PROMPT.format(kcal=calories_daily_goal)
     parsed_diet_plans = await core.request_meal_plans(diet_plan_request_body)
     optimal_meal_plan = await core.compound_most_optimal_meal_plan(parsed_diet_plans, calories_daily_goal)
-    await core.generate_images_for_meals(optimal_meal_plan)
 
+    await core.generate_images_for_meals(optimal_meal_plan)
     await clients.http_client.stop()
+
     return optimal_meal_plan
 
 
