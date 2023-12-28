@@ -1,0 +1,83 @@
+[tool.bandit]
+exclude = [".pytest_cache", './tests/*.py']
+skips = ["B101", "B106", "B311", "B104", "B105"]
+
+[tool.coverage.run]
+concurrency = ["greenlet", "thread"]
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+profile = "black"
+combine_as_imports = true
+force_alphabetical_sort_within_sections = true
+lines_between_types = 0
+src_paths = ["./", "./src/"]
+known_third_party = []
+known_first_party = []
+
+[tool.mypy]
+exclude = ['./tests/*.py']
+follow_imports = "silent"
+ignore_missing_imports = true
+warn_return_any = false
+namespace_packages = true
+explicit_package_bases = true
+disallow_untyped_defs = true
+
+[tool.poetry]
+name = "mealhow-cloud-functions"
+version = "0.1.0"
+description = "Cloud functions for background jobs"
+authors = ["Vitalii Vinnychenko <vitalii@mealhow.ai>"]
+license = "Proprietary"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4"
+mealhow-sdk = {version = "0.1.4", source = "mealhow-python"}
+openai = "0.28.1"
+asyncio = "3.4.3"
+aiohttp = "3.9"
+google-cloud-ndb = "2.2.2"
+gcloud-aio-storage = "9.0.0"
+pillow = "10"
+google-cloud-logging = "3"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+pylint = "^2.15.9"
+pre-commit = "^3.6.0"
+flake8 = "6.1.0"
+flake8-broken-line = "1.0.0"
+flake8-bugbear = "23.12.2"
+flake8-builtins = "2.2.0"
+flake8-comprehensions = "3.14.0"
+flake8-eradicate = "1.5.0"
+flake8-isort = "6.1.1"
+flake8-logging-format = "0.9.0"
+flake8-mutable = "1.2.0"
+flake8-pie = "0.16.0"
+flake8-polyfill = "1.0.2"
+flake8-quotes = "3.3.2"
+flake8-string-format = "0.3.0"
+flake8-tidy-imports = "4.10.0"
+flake8-variables-names = "0.0.6"
+pep8-naming = "0.13.3"
+flake8-deprecated = "2.2.1"
+black = "^23.12.1"
+isort = "^5.13.2"
+
+
+[[tool.poetry.source]]
+name = "mealhow-python"
+url = "https://us-central1-python.pkg.dev/mealhow/mealhow-python/simple/"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120

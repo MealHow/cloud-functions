@@ -1,0 +1,78 @@
+repos:
+- repo: https://github.com/timothycrosley/isort
+  rev: 5.13.2  # Update pyproject.toml when updating the version
+  hooks:
+  - id: isort
+    additional_dependencies:
+    - isort
+- repo: https://github.com/ambv/black
+  rev: 23.12.1  # Update pyproject.toml when updating the version
+  hooks:
+  - id: black
+    language_version: python
+    # Line length discussion: https://regrowag.slack.com/archives/C0302UM9S1J/p1686897987363889
+    args: [--line-length=120]
+- repo: https://github.com/PyCQA/flake8
+  rev: 6.1.0
+  hooks:
+  - id: flake8
+    name: Lint code (flake8)
+    additional_dependencies:
+    - flake8==6.1.0
+    - flake8-broken-line==1.0.0
+    - flake8-bugbear==23.12.2
+    - flake8-builtins==2.2.0
+    - flake8-comprehensions==3.14.0
+    - flake8-eradicate==1.5.0
+    - flake8-isort==6.1.1
+    - flake8-logging-format==0.9.0
+    - flake8-mutable==1.2.0
+    - flake8-pie==0.16.0
+    - flake8-polyfill==1.0.2
+    - flake8-quotes==3.3.2
+    - flake8-string-format==0.3.0
+    - flake8-tidy-imports==4.10.0
+    - flake8-variables-names==0.0.6
+    - pep8-naming==0.13.3
+    - flake8-deprecated==2.2.1
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+  - id: check-added-large-files
+    language_version: python
+    args:
+    - --maxkb=500
+  - id: trailing-whitespace
+    language_version: python
+    args: [--markdown-linebreak-ext=md]
+    exclude: (.github/pull_request_template.md)
+  - id: check-merge-conflict
+    language_version: python
+  - id: check-case-conflict
+    language_version: python
+  - id: check-symlinks
+    language_version: python
+  - id: end-of-file-fixer
+    language_version: python
+    exclude: (.gitignore)
+  - id: check-json
+  - id: pretty-format-json
+    args: [--autofix]
+  - id: check-yaml
+  - id: check-toml
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.12.0
+  hooks:
+  - id: pretty-format-yaml
+    args: [--autofix, --indent, '2']
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.8.0  # Update pyproject.toml when updating the version
+  hooks:
+  - id: mypy
+    name: Lint code (mypy)
+    language: python
+    types: [python]
+    require_serial: true
+    exclude: (./test.*)
+    args: [--config-file=pyproject.toml]
+    additional_dependencies: [types-python-dateutil, types-requests]
