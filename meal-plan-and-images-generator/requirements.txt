@@ -1,8 +1,9 @@
---extra-index-url https://us-central1-python.pkg.dev/mealhow/mealhow-meal-plan-generator/simple/
+--extra-index-url https://us-central1-python.pkg.dev/mealhow/mealhow-python/simple/
 openai==0.28.1
 asyncio==3.4.3
 aiohttp==3.9.*
 functions-framework==3.*
 google-cloud-storage==2.*
 google-cloud-datastore==2.19.*
-meal-plan-generator==0.1.1
+google-cloud-ndb==2.2.2
+mealhow-sdk==0.1.2
