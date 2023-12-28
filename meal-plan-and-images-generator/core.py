@@ -4,8 +4,7 @@ import clients
 import cloud_storage
 import config
 import database
-import helpers
-from mealhow_sdk import external_api
+from mealhow_sdk import external_api, helpers
 
 
 async def generate_images_for_meals(meal_plan: dict):
