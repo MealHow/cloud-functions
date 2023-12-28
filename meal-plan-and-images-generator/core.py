@@ -4,7 +4,7 @@ import clients
 import cloud_storage
 import config
 import database
-from mealhow_sdk import external_api, helpers
+from mealhow_sdk import external_api
 
 
 async def save_image(image_url: str, meal_name: str):
