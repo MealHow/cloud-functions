@@ -28,17 +28,17 @@ async def generate_images_for_meals(meal_plan: dict):
             snake_cased_meal_names.add(meal_id)
             meal_names_map[meal_id] = meal["meal_name"]
 
-    unmatched_meals = []
-    for meal_name in snake_cased_meal_names:
-        meal_obj = await database.get_meal_image_obj_by_key(meal_name)
+    unmatched_meal_ids = []
+    for meal_id in snake_cased_meal_names:
+        meal_obj = await database.get_meal_image_obj_by_key(meal_id)
         if meal_obj is None:
-            unmatched_meals.append(meal_name)
+            unmatched_meal_ids.append(meal_id)
 
     async with asyncio.TaskGroup() as tg:
-        for meal_name in unmatched_meals:
-            meal_to_image_map[meal_name] = tg.create_task(
+        for meal_id in unmatched_meal_ids:
+            meal_to_image_map[meal_id] = tg.create_task(
                 external_api.openai_get_generated_image_url(
-                    config.MEAL_IMAGE_PROMPT.format(meal_name=meal_names_map[meal_name])
+                    config.MEAL_IMAGE_PROMPT.format(meal_name=meal_names_map[meal_id])
                 )
             )
 
