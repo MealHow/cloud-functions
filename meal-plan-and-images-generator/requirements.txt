@@ -6,4 +6,4 @@ functions-framework==3.*
 google-cloud-storage==2.*
 google-cloud-datastore==2.19.*
 google-cloud-ndb==2.2.2
-mealhow-sdk==0.1.2
+mealhow-sdk==0.1.3
