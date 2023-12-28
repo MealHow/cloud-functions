@@ -16,4 +16,4 @@ async def save_new_meal_image_object(meal_name_key: str):
             key=key,
             images={str(i): f"{config.CDN_URL_PREFIX}{meal_name_key}_{i}x{i}.jpg" for i in config.IMAGE_SIZES},
         )
-        meal_image.put_async()
+        return meal_image.put_async()

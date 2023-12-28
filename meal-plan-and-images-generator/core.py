@@ -9,11 +9,12 @@ from mealhow_sdk import external_api, helpers
 
 async def save_image(image_url: str, meal_name: str):
     async with clients.http_client.session.get(image_url) as response:
+        future = await database.save_new_meal_image_object(meal_name)
         await cloud_storage.upload_raw_image_on_cloud_storage(
             blob=await response.content.read(),
             meal_name=meal_name,
         )
-        await database.save_new_meal_image_object(meal_name)
+        future.wait()
 
 
 async def generate_images_for_meals(meal_plan: dict):
@@ -23,9 +24,9 @@ async def generate_images_for_meals(meal_plan: dict):
 
     for day in meal_plan:
         for meal in meal_plan[day]["meals"]:
-            meal_name = helpers.to_snake_case(meal["meal_name"])
-            snake_cased_meal_names.add(meal_name)
-            meal_names_map[meal_name] = meal["meal_name"]
+            meal_id = meal["meal_name"]["id"].split("-")[0]
+            snake_cased_meal_names.add(meal_id)
+            meal_names_map[meal_id] = meal["meal_name"]
 
     unmatched_meals = []
     for meal_name in snake_cased_meal_names:
@@ -41,7 +42,7 @@ async def generate_images_for_meals(meal_plan: dict):
                 )
             )
 
-    async with asyncio.TaskGroup() as tg:
-        for meal_name in meal_to_image_map:
-            image_url = meal_to_image_map[meal_name].result()
-            tg.create_task(save_image(image_url, meal_name))
+    tasks = [save_image(meal_to_image_map[meal_name].result(), meal_name) for meal_name in meal_to_image_map]
+    for i in range(0, len(tasks), 5):
+        group = tasks[i:i + 5]
+        await asyncio.gather(*group)
