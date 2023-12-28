@@ -24,7 +24,7 @@ async def generate_images_for_meals(meal_plan: dict):
 
     for day in meal_plan:
         for meal in meal_plan[day]["meals"]:
-            meal_id = meal["meal_name"]["id"].split("-")[0]
+            meal_id = meal["id"].split("-")[0]
             snake_cased_meal_names.add(meal_id)
             meal_names_map[meal_id] = meal["meal_name"]
 
@@ -44,5 +44,5 @@ async def generate_images_for_meals(meal_plan: dict):
 
     tasks = [save_image(meal_to_image_map[meal_name].result(), meal_name) for meal_name in meal_to_image_map]
     for i in range(0, len(tasks), 5):
-        group = tasks[i:i + 5]
+        group = tasks[i : i + 5]
         await asyncio.gather(*group)
