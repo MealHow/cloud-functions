@@ -1,19 +1,19 @@
 import asyncio
 
+import clients
+import config
+import core
 import functions_framework
 import mealhow_sdk
 import openai
 
-import clients
-import config
-import core
-
 
 async def main(input_data):
     clients.http_client.start()
+    clients.cloud_storage_session.initialise(clients.http_client())
     openai.aiosession.set(clients.http_client())
 
-    calories_daily_goal = int(input_data['kcal'])
+    calories_daily_goal = int(input_data["kcal"])
     diet_plan_request_body = config.MEAL_PLAN_PROMPT.format(kcal=calories_daily_goal)
     parsed_diet_plans = await mealhow_sdk.request_meal_plans(
         request_body=diet_plan_request_body,

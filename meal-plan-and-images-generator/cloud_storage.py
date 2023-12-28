@@ -1,8 +1,12 @@
 import io
 
+import config
+from clients import cloud_storage_session
 
-async def upload_raw_image_on_cloud_storage(blob, meal_name, bucket):
+
+async def upload_raw_image_on_cloud_storage(blob, meal_name):
     raw_img = io.BytesIO(blob)
     raw_img.seek(0)
-    dest_blob = bucket.blob(f"{meal_name}.png")
-    dest_blob.upload_from_file(raw_img, content_type="image/png")
+    await cloud_storage_session().upload(
+        bucket=config.DESTINATION_BUCKET, object_name=f"{meal_name}.png", file_data=raw_img, content_type="image/png"
+    )

@@ -7,6 +7,15 @@ import database
 from mealhow_sdk import external_api, helpers
 
 
+async def save_image(image_url: str, meal_name: str):
+    async with clients.http_client.session.get(image_url) as response:
+        await cloud_storage.upload_raw_image_on_cloud_storage(
+            blob=await response.content.read(),
+            meal_name=meal_name,
+        )
+        await database.save_new_meal_image_object(meal_name)
+
+
 async def generate_images_for_meals(meal_plan: dict):
     snake_cased_meal_names = set()
     meal_names_map = {}
@@ -32,16 +41,7 @@ async def generate_images_for_meals(meal_plan: dict):
                 )
             )
 
-    dest_bucket = clients.storage_client.bucket(config.DESTINATION_BUCKET)
-
-    for meal_name in meal_to_image_map:
-        image_url = meal_to_image_map[meal_name].result()
-
-        async with clients.http_client.session.get(image_url) as response:
-            await cloud_storage.upload_raw_image_on_cloud_storage(
-                blob=await response.content.read(),
-                meal_name=meal_name,
-                bucket=dest_bucket,
-            )
-
-        await database.save_new_meal_image_object(meal_name, meal_names_map[meal_name])
+    async with asyncio.TaskGroup() as tg:
+        for meal_name in meal_to_image_map:
+            image_url = meal_to_image_map[meal_name].result()
+            tg.create_task(save_image(image_url, meal_name))
