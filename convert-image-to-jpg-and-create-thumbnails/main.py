@@ -2,7 +2,6 @@ import asyncio
 import os
 from io import BytesIO
 
-import clients
 import functions_framework
 from mealhow_sdk.clients import CloudStorage, HttpClient
 from PIL import Image
@@ -28,19 +27,19 @@ async def save_image(buff: BytesIO, size: tuple[int, int], file_name: str):
     rgb_img.save(img_byte_arr, format="JPEG")
     img_byte_arr.seek(0)
 
-    await clients.cloud_storage_session().upload(
+    await cloud_storage_session().upload(
         bucket=DESTINATION_BUCKET, object_name=new_image_name, file_data=img_byte_arr, content_type="image/jpeg"
     )
 
 
 async def convert_image(data):
-    clients.http_client.start()
-    clients.cloud_storage_session.initialise(clients.http_client())
+    http_client.start()
+    cloud_storage_session.initialise(http_client())
 
     object_name = data["name"]
     file_name, _ = object_name.split(".")
 
-    blob = await clients.cloud_storage_session().download(data["bucket"], object_name)
+    blob = await cloud_storage_session().download(data["bucket"], object_name)
     buff = BytesIO(blob)
     buff.seek(0)
 
