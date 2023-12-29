@@ -2,8 +2,7 @@ import asyncio
 
 import clients
 import cloud
-import config
-from mealhow_sdk import external_api
+from mealhow_sdk import external_api, prompt_templates
 
 
 async def save_image(image_url: str, meal_image_id: str, meal_obj: dict) -> None:
@@ -34,7 +33,7 @@ async def save_meal_info_and_generate_images(meal_plan: dict) -> None:
         for meal_id in unmatched_meal_ids:
             meal_id_to_image_map[meal_id] = tg.create_task(
                 external_api.openai_get_generated_image_url(
-                    config.MEAL_IMAGE_PROMPT.format(meal_name=meal_id_to_obj_map[meal_id]["meal_name"])
+                    prompt_templates.MEAL_IMAGE_PROMPT.format(meal_name=meal_id_to_obj_map[meal_id]["meal_name"])
                 )
             )
 
