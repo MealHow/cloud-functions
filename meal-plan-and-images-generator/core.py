@@ -6,7 +6,7 @@ import config
 from mealhow_sdk import external_api
 
 
-async def save_image(image_url: str, meal_image_id: str, meal_obj: dict):
+async def save_image(image_url: str, meal_image_id: str, meal_obj: dict) -> None:
     async with clients.http_client.session.get(image_url) as response:
         future = await cloud.save_new_meal_info_and_image(meal_image_id, meal_obj)
         await cloud.upload_raw_image_on_cloud_storage(
@@ -16,7 +16,7 @@ async def save_image(image_url: str, meal_image_id: str, meal_obj: dict):
         future.wait()
 
 
-async def save_meal_info_and_generate_images(meal_plan: dict):
+async def save_meal_info_and_generate_images(meal_plan: dict) -> None:
     meal_images_ids = set()
     meal_id_to_obj_map = {}
     meal_id_to_image_map = {}

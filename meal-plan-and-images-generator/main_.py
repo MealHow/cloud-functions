@@ -1,4 +1,5 @@
 import asyncio
+from typing import Any
 
 import clients
 import cloud
@@ -9,7 +10,7 @@ import mealhow_sdk
 import openai
 
 
-async def main(input_data):
+async def main(input_data: dict) -> dict:
     clients.http_client.start()
     clients.cloud_storage_session.initialise(clients.http_client())
     openai.aiosession.set(clients.http_client())
@@ -36,7 +37,7 @@ async def main(input_data):
 
 
 @functions_framework.http
-def execute(request):
+def execute(request: Any) -> tuple:
     request_json = request.get_json(silent=True)
 
     loop = asyncio.new_event_loop()

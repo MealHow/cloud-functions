@@ -1,6 +1,7 @@
 import asyncio
 import os
 from io import BytesIO
+from typing import Any
 
 import functions_framework
 from mealhow_sdk.clients import CloudStorage, HttpClient
@@ -18,7 +19,7 @@ cloud_storage_session = CloudStorage()
 http_client = HttpClient()
 
 
-async def save_image(buff: BytesIO, size: tuple[int, int], file_name: str):
+async def save_image(buff: BytesIO, size: tuple[int, int], file_name: str) -> None:
     new_image_name = f"{DESTINATION_DIR}/{file_name}_{size[0]}x{size[1]}.jpg"
     img = Image.open(buff)
     rgb_img = img.convert("RGB")
@@ -32,7 +33,7 @@ async def save_image(buff: BytesIO, size: tuple[int, int], file_name: str):
     )
 
 
-async def convert_image(data):
+async def convert_image(data: dict) -> None:
     http_client.start()
     cloud_storage_session.initialise(http_client())
 
@@ -49,7 +50,7 @@ async def convert_image(data):
 
 
 @functions_framework.cloud_event
-def execute(cloud_event):
+def execute(cloud_event: Any) -> None:
     data = cloud_event.data
 
     loop = asyncio.new_event_loop()

@@ -17,7 +17,7 @@ from mealhow_sdk.datastore_models import (
 )
 
 
-async def upload_raw_image_on_cloud_storage(blob, meal_name):
+async def upload_raw_image_on_cloud_storage(blob: bytes, meal_name: str) -> None:
     raw_img = io.BytesIO(blob)
     raw_img.seek(0)
     await clients.cloud_storage_session().upload(
@@ -61,7 +61,7 @@ async def save_new_meal_info_and_image(meal_image_id: str, meal_obj: dict) -> Fu
         return meal.put_async()
 
 
-async def save_meal_plan(meal_plan: dict, user_id: str):
+async def save_meal_plan(meal_plan: dict, user_id: str) -> None:
     with clients.ndb_client.context():
         user_key = ndb.Key(User, user_id)
 
