@@ -25,7 +25,6 @@ async def main(input_data):
         daily_calories_goal=calories_daily_goal,
     )
 
-    await core.generate_images_for_meals(optimal_meal_plan)
     await core.save_meal_info_and_generate_images(optimal_meal_plan)
     await core.save_meal_plan(optimal_meal_plan, user_id)
     await clients.http_client.stop()
