@@ -1330,13 +1330,13 @@ files = [
 
 [[package]]
 name = "mealhow-sdk"
-version = "0.1.8"
+version = "0.1.9"
 description = ""
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "mealhow_sdk-0.1.8-py3-none-any.whl", hash = "sha256:a49cc89e40cfda1f63be353ba6a8e74b3d973ced9b4fa8bdba6a2484882002ce"},
-    {file = "mealhow_sdk-0.1.8.tar.gz", hash = "sha256:22279f8423954f98cdd98b493d2c14f73e1cd61343676a35826a32effe0af9b5"},
+    {file = "mealhow_sdk-0.1.9-py3-none-any.whl", hash = "sha256:67a4f5edfbcee2e27f9de42de3bf2fd3368fd5190becdde524d9b800f9735948"},
+    {file = "mealhow_sdk-0.1.9.tar.gz", hash = "sha256:93d9805760171a14ec301604e7bbd106344daf1aa6c7be82abbcb6aa9816a60c"},
 ]
 
 [package.dependencies]
@@ -2231,4 +2231,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4"
-content-hash = "0b517c7127f9f60d03c8a564458f5f60818195aa0f98a87e61de7946f33991e9"
+content-hash = "8500771936b4b611961e276213fd8f1583bc0b01468b9858c125f2e250d56222"

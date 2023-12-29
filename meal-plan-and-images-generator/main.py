@@ -1,6 +1,7 @@
 import asyncio
 
 import clients
+import cloud
 import config
 import core
 import functions_framework
@@ -25,8 +26,10 @@ async def main(input_data):
         daily_calories_goal=calories_daily_goal,
     )
 
-    await core.save_meal_info_and_generate_images(optimal_meal_plan)
-    await core.save_meal_plan(optimal_meal_plan, user_id)
+    await asyncio.gather(
+        core.save_meal_info_and_generate_images(optimal_meal_plan),
+        cloud.save_meal_plan(optimal_meal_plan, user_id),
+    )
     await clients.http_client.stop()
 
     return optimal_meal_plan
@@ -45,5 +48,5 @@ def execute(request):
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()
-    task = loop.create_task(main({"kcal": 2200, "user_id": "123"}))
+    task = loop.create_task(main({"kcal": 2200, "user_id": "test"}))
     loop.run_until_complete(task)

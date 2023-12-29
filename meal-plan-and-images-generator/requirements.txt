@@ -5,4 +5,4 @@ aiohttp==3.9.*
 functions-framework==3.*
 google-cloud-ndb==2.2.2
 gcloud-aio-storage==9.0.0
-mealhow-sdk==0.1.5
+mealhow-sdk==0.1.9

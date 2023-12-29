@@ -45,7 +45,3 @@ async def save_meal_info_and_generate_images(meal_plan: dict):
     for i in range(0, len(tasks), 5):
         group = tasks[i : i + 5]
         await asyncio.gather(*group)
-
-
-async def save_meal_plan(meal_plan: dict, user_id: str):
-    pass
