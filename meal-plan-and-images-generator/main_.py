@@ -11,20 +11,28 @@ import openai
 
 
 async def main(input_data: dict) -> dict:
+    prompt = await mealhow_sdk.get_openai_meal_plan_prompt(
+        mealhow_sdk.MealPlanPromptInputData(
+            calories_goal=input_data["calories_goal"],
+            protein_goal=input_data.get("protein_goal", None),
+            preparation_time=input_data.get("preparation_time", None),
+            preferred_cuisines=input_data.get("preferred_cuisines", []),
+            ingredients_to_avoid=input_data.get("ingredients_to_avoid", []),
+            health_issues=input_data.get("health_issues", []),
+        )
+    )
     clients.http_client.start()
     clients.cloud_storage_session.initialise(clients.http_client())
     openai.aiosession.set(clients.http_client())
 
-    calories_daily_goal = int(input_data["kcal"])
     user_id = input_data["user_id"]
-    diet_plan_request_body = config.MEAL_PLAN_PROMPT.format(kcal=calories_daily_goal)
     parsed_diet_plans = await mealhow_sdk.request_meal_plans(
-        request_body=diet_plan_request_body,
+        request_body=prompt,
         gpt_model=config.OPENAI_GPT_MODEL_VERSION,
     )
     optimal_meal_plan = await mealhow_sdk.compound_most_optimal_meal_plan(
         diet_plan_variations=parsed_diet_plans,
-        daily_calories_goal=calories_daily_goal,
+        daily_calories_goal=input_data["calories_goal"],
     )
 
     await asyncio.gather(
@@ -49,5 +57,5 @@ def execute(request: Any) -> tuple:
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()
-    task = loop.create_task(main({"kcal": 2200, "user_id": "test"}))
+    task = loop.create_task(main({"calories_goal": 2200, "user_id": "test"}))
     loop.run_until_complete(task)

@@ -35,7 +35,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
-mealhow-sdk = {version = "0.1.9", source = "mealhow-python"}
+mealhow-sdk = {version = "0.1.10", source = "mealhow-python"}
 openai = "0.28.1"
 asyncio = "3.4.3"
 aiohttp = "3.9"
