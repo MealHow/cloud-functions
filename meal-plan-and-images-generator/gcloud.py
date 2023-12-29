@@ -1,7 +1,18 @@
+import io
+
 import clients
 import config
+from clients import cloud_storage_session
 from google.cloud import ndb
 from mealhow_sdk.datastore_models import MealImage
+
+
+async def upload_raw_image_on_cloud_storage(blob, meal_name):
+    raw_img = io.BytesIO(blob)
+    raw_img.seek(0)
+    await cloud_storage_session().upload(
+        bucket=config.DESTINATION_BUCKET, object_name=f"{meal_name}.png", file_data=raw_img, content_type="image/png"
+    )
 
 
 async def get_meal_image_obj_by_key(meal_name: str):

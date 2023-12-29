@@ -1330,17 +1330,18 @@ files = [
 
 [[package]]
 name = "mealhow-sdk"
-version = "0.1.4"
+version = "0.1.5"
 description = ""
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "mealhow_sdk-0.1.4-py3-none-any.whl", hash = "sha256:20e3483201954d99b85cc221f70d97bf71cee48831115787a0d289de357122e5"},
-    {file = "mealhow_sdk-0.1.4.tar.gz", hash = "sha256:a26334f11b7c3d8dc884e96842020eb59dbeeeb4eac301800641e9b40e975656"},
+    {file = "mealhow_sdk-0.1.5-py3-none-any.whl", hash = "sha256:4a7d94cc5e5bdb3d58b603915384f13fb59a5ee839d68f9fcc196f770970c468"},
+    {file = "mealhow_sdk-0.1.5.tar.gz", hash = "sha256:f1981ce803f5f9c9e2fa9af57bc11928dfc43df451fda1b9d7e68ef649ef128d"},
 ]
 
 [package.dependencies]
 asyncio = "3.4.3"
+gcloud-aio-storage = "9.0.0"
 google-cloud-ndb = "2.2.2"
 openai = "0.28.1"
 
@@ -2230,4 +2231,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4"
-content-hash = "7fc96f4fc3b4eed6ef73c05354e7a3dbace05fdc0ce4ff017f577d774221359f"
+content-hash = "2619a4d584988eb2058f4ba02723de53ce7fdf454f9aac060bd129bee9eeebe1"

@@ -1,16 +1,15 @@
 import asyncio
 
 import clients
-import cloud_storage
 import config
-import database
+import gcloud
 from mealhow_sdk import external_api
 
 
 async def save_image(image_url: str, meal_name: str):
     async with clients.http_client.session.get(image_url) as response:
-        future = await database.save_new_meal_image_object(meal_name)
-        await cloud_storage.upload_raw_image_on_cloud_storage(
+        future = await gcloud.save_new_meal_image_object(meal_name)
+        await gcloud.upload_raw_image_on_cloud_storage(
             blob=await response.content.read(),
             meal_name=meal_name,
         )
@@ -30,7 +29,7 @@ async def generate_images_for_meals(meal_plan: dict):
 
     unmatched_meal_ids = []
     for meal_id in snake_cased_meal_names:
-        meal_obj = await database.get_meal_image_obj_by_key(meal_id)
+        meal_obj = await gcloud.get_meal_image_obj_by_key(meal_id)
         if meal_obj is None:
             unmatched_meal_ids.append(meal_id)
 

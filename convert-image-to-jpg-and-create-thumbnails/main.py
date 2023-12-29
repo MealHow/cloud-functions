@@ -4,6 +4,7 @@ from io import BytesIO
 
 import clients
 import functions_framework
+from mealhow_sdk.clients import CloudStorage, HttpClient
 from PIL import Image
 
 IMAGE_SIZES = [
@@ -13,6 +14,9 @@ IMAGE_SIZES = [
 ]
 DESTINATION_BUCKET = os.environ["DESTINATION_BUCKET"]
 DESTINATION_DIR = os.environ["DESTINATION_DIR"]
+
+cloud_storage_session = CloudStorage()
+http_client = HttpClient()
 
 
 async def save_image(buff: BytesIO, size: tuple[int, int], file_name: str):
