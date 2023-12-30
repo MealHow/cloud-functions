@@ -13,7 +13,6 @@ from mealhow_sdk.datastore_models import (
     MealPlanDayTotalInfo,
     MealPlanDetails,
     MealPlanItem,
-    User,
 )
 
 
@@ -61,14 +60,8 @@ async def save_new_meal_info_and_image(meal_image_id: str, meal_obj: dict) -> Fu
         return meal.put_async()
 
 
-async def save_meal_plan(meal_plan: dict, user_id: str) -> None:
+async def save_meal_plan(meal_plan: dict, meal_plan_id: str) -> None:
     with clients.ndb_client.context():
-        user_key = ndb.Key(User, user_id)
-
-        current_active_meal_plan = (
-            MealPlan.query().filter(ndb.AND(MealPlan.user == user_key, MealPlan.active == True)).get()  # noqa: E712
-        )
-
         meal_plan_details = {}
         for day in meal_plan:
             day_meals = meal_plan[day]["meals"]
@@ -96,9 +89,6 @@ async def save_meal_plan(meal_plan: dict, user_id: str) -> None:
                 ),
             )
 
-        meal_plan_obj = MealPlan(user=user_key, details=MealPlanDetails(**meal_plan_details))
+        meal_plan_obj = MealPlan.get_by_id(meal_plan_id)
+        meal_plan_obj.details = MealPlanDetails(**meal_plan_details)
         meal_plan_obj.put()
-
-        if current_active_meal_plan is not None:
-            current_active_meal_plan.active = False
-            current_active_meal_plan.put()
