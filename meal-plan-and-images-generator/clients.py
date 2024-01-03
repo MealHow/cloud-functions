@@ -1,4 +1,3 @@
-import config
 from google.cloud import ndb
 from mealhow_sdk.clients import CloudStorage, HttpClient
 
