@@ -66,7 +66,8 @@ async def main(input_data: dict) -> None:
                 sl2 = group.create_task(create_shopping_list_for_meals_with_recipes(ingredients))
 
             shopping_list.items = shopping_list.items + [
-                ShoppingListItem(name=item["product_name"], quantity=item["quantity"]) for item in sl1.result() + sl2.result()
+                ShoppingListItem(name=item["product_name"], quantity=item["quantity"])
+                for item in sl1.result() + sl2.result()
             ]
             shopping_list.put()
 
