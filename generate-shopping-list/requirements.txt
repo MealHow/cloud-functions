@@ -4,4 +4,4 @@ asyncio==3.4.3
 aiohttp==3.9.*
 functions-framework==3.*
 google-cloud-ndb==2.2.2
-mealhow-sdk==0.2.15
+mealhow-sdk==0.2.17
