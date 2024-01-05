@@ -7,7 +7,7 @@ import functions_framework
 import openai
 from cloudevents.http.event import CloudEvent
 from google.cloud import ndb
-from mealhow_sdk import enums, external_api, prompt_templates
+from mealhow_sdk import enums, external_api, prompt_templates, parsers
 from mealhow_sdk.clients import HttpClient
 from mealhow_sdk.datastore_models import Meal, MealRecipe
 
@@ -23,9 +23,6 @@ async def main(input_data: dict) -> None:
 
     with ndb_client.context():
         meal = Meal.get_by_id(input_data["meal_id"])
-        meal.recipe_status = enums.JobStatus.in_progress.name
-        meal = meal.put().get()
-
         try:
             response = await external_api.openai_get_gpt_response(
                 model=OPENAI_GPT_MODEL_VERSION,
@@ -34,7 +31,18 @@ async def main(input_data: dict) -> None:
                 ),
             )
 
-            recipe = MealRecipe(recipe=response)
+            ingredients_content = await parsers.extract_section(response, "ngredients", "nstructions")
+            if ingredients_content:
+                ingredients = await parsers.extract_ingredients(ingredients_content)
+                for i in range(len(ingredients)):
+                    ingredients[i] = ingredients[i].strip().lower()
+            else:
+                ingredients = None
+
+            recipe = MealRecipe(
+                text=response,
+                ingredients=ingredients,
+            )
             recipe_key = recipe.put()
 
             meal.recipe = recipe_key
