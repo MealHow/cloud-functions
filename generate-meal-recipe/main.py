@@ -7,7 +7,7 @@ import functions_framework
 import openai
 from cloudevents.http.event import CloudEvent
 from google.cloud import ndb
-from mealhow_sdk import enums, external_api, prompt_templates, parsers
+from mealhow_sdk import enums, external_api, parsers, prompt_templates
 from mealhow_sdk.clients import HttpClient
 from mealhow_sdk.datastore_models import Meal, MealRecipe
 
