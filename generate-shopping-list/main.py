@@ -17,6 +17,26 @@ http_client = HttpClient()
 ndb_client = ndb.Client()
 
 
+async def create_shopping_list_for_meals_without_recipes(meals: list[Meal]) -> list[dict]:
+    meals_list_text = "\n".join([f"- {meal.full_name} ({meal.calories} calories)" for meal in meals])
+
+    response = await external_api.openai_get_gpt_response(
+        model=OPENAI_GPT_MODEL_VERSION,
+        text_request=prompt_templates.SHOPPING_LIST_MEALS_REQUEST.format(meals_list=meals_list_text),
+    )
+    return await parsers.parse_shopping_list(response)
+
+
+async def create_shopping_list_for_meals_with_recipes(ingredients: list[str]) -> list[dict]:
+    meals_list_text = "\n".join([f"- {ingredient}" for ingredient in ingredients])
+
+    response = await external_api.openai_get_gpt_response(
+        model=OPENAI_GPT_MODEL_VERSION,
+        text_request=prompt_templates.SHOPPING_LIST_INGREDIENTS_REQUEST.format(meals_list=meals_list_text),
+    )
+    return await parsers.parse_shopping_list(response)
+
+
 async def main(input_data: dict) -> None:
     http_client.start()
     openai.aiosession.set(http_client())
@@ -30,16 +50,23 @@ async def main(input_data: dict) -> None:
         try:
             meal_keys = [ndb.Key(Meal, meal_id) for meal_id in input_data["meal_ids"]]
             meals = ndb.get_multi(meal_keys)
-            meals_list_text = "\n".join([f"- {meal.full_name} ({meal.calories} calories)" for meal in meals])
+            ingredients = []
+            meals_without_recipes = []
 
-            response = await external_api.openai_get_gpt_response(
-                model=OPENAI_GPT_MODEL_VERSION,
-                text_request=prompt_templates.SHOPPING_LIST_REQUEST.format(meals_list=meals_list_text),
-            )
+            for meal in meals:
+                if meal.recipe_status == enums.JobStatus.done.name:
+                    recipe = meal.recipe.get()
+                    if recipe.ingredients:
+                        ingredients.extend(recipe.ingredients)
+                else:
+                    meals_without_recipes.append(meal)
 
-            parsed_shopping_list = await parsers.parse_shopping_list(response)
+            async with asyncio.TaskGroup() as group:
+                sl1 = group.create_task(create_shopping_list_for_meals_without_recipes(meals_without_recipes))
+                sl2 = group.create_task(create_shopping_list_for_meals_with_recipes(ingredients))
+
             shopping_list.items = shopping_list.items + [
-                ShoppingListItem(name=item["product_name"], quantity=item["quantity"]) for item in parsed_shopping_list
+                ShoppingListItem(name=item["product_name"], quantity=item["quantity"]) for item in sl1.result() + sl2.result()
             ]
             shopping_list.put()
 
