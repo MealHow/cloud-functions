@@ -22,17 +22,17 @@ async def create_shopping_list_for_meals_without_recipes(meals: list[Meal]) -> l
 
     response = await external_api.openai_get_gpt_response(
         model=OPENAI_GPT_MODEL_VERSION,
-        text_request=prompt_templates.SHOPPING_LIST_MEALS_REQUEST.format(meals_list=meals_list_text),
+        text_request=prompt_templates.SHOPPING_LIST_MEALS_REQUEST.format(meal_plan=meals_list_text),
     )
     return await parsers.parse_shopping_list(response)
 
 
 async def create_shopping_list_for_meals_with_recipes(ingredients: list[str]) -> list[dict]:
-    meals_list_text = "\n".join([f"- {ingredient}" for ingredient in ingredients])
+    ingredients_text_list = "\n".join([f"- {ingredient}" for ingredient in ingredients])
 
     response = await external_api.openai_get_gpt_response(
         model=OPENAI_GPT_MODEL_VERSION,
-        text_request=prompt_templates.SHOPPING_LIST_INGREDIENTS_REQUEST.format(meals_list=meals_list_text),
+        text_request=prompt_templates.SHOPPING_LIST_INGREDIENTS_REQUEST.format(ingredients=ingredients_text_list),
     )
     return await parsers.parse_shopping_list(response)
 
